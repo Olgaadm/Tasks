@@ -1,76 +1,103 @@
 package com.linkedList;
 
-public class SinglyLinkedList {
+public class SinglyLinkedList<T> implements LinkedList<T> {
 
-    Node head = null;
-    Node tail = null;
+    private Node<T> tail;
 
-    int length;
+    private int length;
 
-    static class Node {
-        Node pointer;
-        Object value;
+    private static class Node<T> {
+        private Node<T> next;
+        private final T value;
 
-        public Node(Object value) {
+        private Node(T value) {
             this.value = value;
-            this.pointer = null;
         }
     }
 
-    public void insertStart(Node node) {
-        if (this.head == null) {
-            this.head = node;
-            this.head.pointer = this.tail;
-            this.tail = this.head;
+    public void addFirst(T value) {
+        Node<T> node = new Node<>(value);
+        if (length == 0) {
+            tail = node;
+            tail.next = tail;
         } else {
-            node.pointer = this.head;
-            this.head = node;
+            node.next = tail.next;
+            tail.next = node;
         }
-        this.length++;
+        length++;
     }
 
-
-    public void insertEnd(Node node) {
-        if (this.head == null) {
-            this.head = node;
-            this.head.pointer = this.tail;
-            this.tail = this.head;
+    public void addLast(T value) {
+        Node<T> node = new Node<>(value);
+        if (length == 0) {
+            tail = node;
+            tail.next = tail;
         } else {
-            this.tail.pointer = node;
-            this.tail = node;
+            node.next = tail.next;
+            tail.next = node;
+            tail = node;
         }
-        this.length++;
+        length++;
     }
 
-    public void insertIndex(Node node, int index) {
-        if (index < this.length) {
-            if (index == 0) {
-                insertStart(node);
-            } else {
-                int i = 0;
-                Node searchNode = this.head;
-                Node leftNode = null;
-                while (i < index) {
-                    leftNode = searchNode;
-                    searchNode = searchNode.pointer;
-                    i++;
+    public void add(T value, int index) {
+        if (index < length) {
+            if (index == 0) addFirst(value);
+            else if (index == length - 1) addLast(value);
+            else {
+                Node<T> node = new Node<>(value);
+                Node<T> currentNode = tail.next;
+                Node<T> previousNode = null;
+                for (int i = 0; i < index; i++) {
+                    previousNode = currentNode;
+                    currentNode = currentNode.next;
                 }
-                node.pointer = searchNode;
-                leftNode.pointer = node;
-
-                this.length++;
+                node.next = currentNode;
+                previousNode.next = node;
+                length++;
             }
         } else throw new IndexOutOfBoundsException("Index not available.");
     }
 
-    public void printList() {
-        int i = 0;
-        Node searchNode = this.head;
+    @Override
+    public void remove(T value) {
+        int indexOfElement = indexOf(value);
+        Node<T> current = tail.next;
+        Node<T> previousNode = null;
+        if (indexOfElement != -1) {
+            if (indexOfElement == 0) {
+                tail.next = current.next;
+            } else {
+                for (int i = 0; i < indexOfElement; i++) {
+                    previousNode = current;
+                    current = current.next;
+                }
+                previousNode.next = current.next;
+            }
+            length--;
+        } else System.out.println("There is no such element in list");
+    }
+
+    @Override
+    public int indexOf(T value) {
+        int index = 0;
+        Node<T> current = tail.next;
+        while (current != null) {
+            if (current.value.equals(value)) {
+                return index;
+            }
+            index++;
+            current = current.next;
+        }
+        return -1;
+    }
+
+    public void print() {
+        Node<T> current = tail.next;
         String output = "";
-        while (i < length) {
-            output = output.concat(searchNode.value + " ");
-            searchNode = searchNode.pointer;
-            i++;
+        for (int i = 0; i < length; i++) {
+            output = output.concat(current.value + " ");
+            current = current.next;
         }
         System.out.println(output);
     }

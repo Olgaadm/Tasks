@@ -3,40 +3,51 @@ package com.linkedList;
 public class Starter {
 
     public static void main(String[] args) {
-        SinglyLinkedList singlyLinkedList = new SinglyLinkedList();
-        singlyLinkedList.insertStart(new SinglyLinkedList.Node(4));
-        singlyLinkedList.insertStart(new SinglyLinkedList.Node(79));
-        singlyLinkedList.insertEnd(new SinglyLinkedList.Node(6));
-        singlyLinkedList.insertEnd(new SinglyLinkedList.Node(89));
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(293), 0);
-        singlyLinkedList.insertEnd(new SinglyLinkedList.Node(22));
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(999), 5);
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(11), 3);
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(52), 2);
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(45), 0);
-        singlyLinkedList.insertIndex(new SinglyLinkedList.Node(121), 5);
-        singlyLinkedList.insertStart(new SinglyLinkedList.Node(43));
-        singlyLinkedList.insertStart(new SinglyLinkedList.Node(712));
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.addFirst(4);
+        singlyLinkedList.addFirst(79);
+        singlyLinkedList.addLast(6);
+        singlyLinkedList.addLast(89);
+        singlyLinkedList.add(293, 0);
+        singlyLinkedList.addLast(22);
+        singlyLinkedList.add(999, 5);
+        singlyLinkedList.add(11, 3);
+        singlyLinkedList.add(52, 2);
+        singlyLinkedList.add(45, 0);
+        singlyLinkedList.add(121, 5);
+        singlyLinkedList.addFirst(43);
+        singlyLinkedList.addFirst(712);
 
-        singlyLinkedList.printList();
+        singlyLinkedList.print();
+        singlyLinkedList.remove(11);
+        singlyLinkedList.remove(712);
+        singlyLinkedList.remove(4);
+        singlyLinkedList.remove(999);
+        singlyLinkedList.remove(121);
+        singlyLinkedList.print();
 
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.addFirst(4);
+        doublyLinkedList.addFirst(79);
+        doublyLinkedList.addLast(6);
+        doublyLinkedList.addLast(89);
+        doublyLinkedList.add(293, 0);
+        doublyLinkedList.addLast(22);
+        doublyLinkedList.add(999, 5);
+        doublyLinkedList.add(11, 3);
+        doublyLinkedList.add(52, 2);
+        doublyLinkedList.add(45, 0);
+        doublyLinkedList.add(121, 5);
+        doublyLinkedList.addFirst(43);
+        doublyLinkedList.addFirst(712);
 
-        DoublyLinkedList doublyLinkedList = new DoublyLinkedList();
-        doublyLinkedList.insertStart(new DoublyLinkedList.Node(4));
-        doublyLinkedList.insertStart(new DoublyLinkedList.Node(79));
-        doublyLinkedList.insertEnd(new DoublyLinkedList.Node(6));
-        doublyLinkedList.insertEnd(new DoublyLinkedList.Node(89));
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(293), 0);
-        doublyLinkedList.insertEnd(new DoublyLinkedList.Node(22));
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(999), 5);
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(11), 3);
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(52), 2);
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(45), 0);
-        doublyLinkedList.insertIndex(new DoublyLinkedList.Node(121), 5);
-        doublyLinkedList.insertStart(new DoublyLinkedList.Node(43));
-        doublyLinkedList.insertStart(new DoublyLinkedList.Node(712));
-        doublyLinkedList.printList();
-
+        doublyLinkedList.print();
+        doublyLinkedList.remove(11);
+        doublyLinkedList.remove(712);
+        doublyLinkedList.remove(4);
+        doublyLinkedList.remove(999);
+        doublyLinkedList.remove(121);
+        doublyLinkedList.print();
 
     }
 }

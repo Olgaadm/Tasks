@@ -1,16 +1,22 @@
 package com.linkedList;
 
+import java.util.Arrays;
+
 interface LinkedList<T> {
 
-    void addFirst(T value);
+    void insertHead(T value);
 
-    void addLast(T value);
+    void append(T value);
 
-    void add(T value, int index);
+    void insert(T value, int index);
 
     void remove(T value);
 
     int indexOf(T value);
 
     void print();
+
+    T get(int index);
+
+    T[] toArray();
 }

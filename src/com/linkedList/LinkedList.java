@@ -1,7 +1,5 @@
 package com.linkedList;
 
-import java.util.Arrays;
-
 interface LinkedList<T> {
 
     void insertHead(T value);
@@ -10,7 +8,7 @@ interface LinkedList<T> {
 
     void insert(T value, int index);
 
-    void remove(T value);
+    boolean remove(T value);
 
     int indexOf(T value);
 
@@ -18,5 +16,5 @@ interface LinkedList<T> {
 
     T get(int index);
 
-    T[] toArray();
+    Object[] toArray();
 }

@@ -4,8 +4,6 @@ import com.linkedList.DoublyLinkedList;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.NoSuchElementException;
-
 public class DoublyLinkedListTest {
 
 
@@ -91,6 +89,18 @@ public class DoublyLinkedListTest {
     }
 
     @Test
+    void insertNullElementToList() {
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.insert(22, 0);
+        doublyLinkedList.append(null);
+        doublyLinkedList.insert(505, 0);
+        doublyLinkedList.insert(null, 2);
+        doublyLinkedList.insert(9, 1);
+        Integer[] expectedArray = {505, 9, 22};
+        Assert.assertEquals(doublyLinkedList.toArray(), expectedArray);
+    }
+
+    @Test
     void checkIndexOfElements() {
         DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
         doublyLinkedList.insert(22, 0);
@@ -126,13 +136,33 @@ public class DoublyLinkedListTest {
         doublyLinkedList.insert(77, 1);
         doublyLinkedList.insert(9, 1);
         doublyLinkedList.remove(505);
-        doublyLinkedList.remove(9);
+        doublyLinkedList.remove(400);
         doublyLinkedList.append(4);
         doublyLinkedList.remove(22);
         doublyLinkedList.remove(4);
 
+        Integer[] expectedArrayAfterRemoval = {9, 77, 8};
+        Assert.assertEquals(doublyLinkedList.toArray(), expectedArrayAfterRemoval);
+    }
 
-        Integer[] expectedArrayAfterRemoval = {77, 400, 8};
+    @Test
+    void removeElementsFromEnd() {
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.insert(22, 0);
+        doublyLinkedList.insert(505, 0);
+        doublyLinkedList.append(8);
+        doublyLinkedList.insert(400, 1);
+        doublyLinkedList.insert(77, 1);
+        doublyLinkedList.insert(9, 1);
+        doublyLinkedList.remove(8);
+        doublyLinkedList.remove(22);
+        doublyLinkedList.append(4);
+        doublyLinkedList.insert(200, 3);
+        doublyLinkedList.remove(4);
+        doublyLinkedList.insertHead(89);
+        doublyLinkedList.append(68);
+
+        Integer[] expectedArrayAfterRemoval = {89, 505, 9, 77, 200, 400, 68};
         Assert.assertEquals(doublyLinkedList.toArray(), expectedArrayAfterRemoval);
     }
 
@@ -142,11 +172,25 @@ public class DoublyLinkedListTest {
         doublyLinkedList.insert(22, 0);
         doublyLinkedList.insert(505, 0);
         doublyLinkedList.insert(9, 1);
-        try {
-            doublyLinkedList.remove(4);
-        } catch (NoSuchElementException e) {
-            Assert.assertEquals(e.getMessage(), "There is no such element in list");
-        }
+        Assert.assertFalse(doublyLinkedList.remove(4));
+    }
+
+    @Test
+    void removeNullElementFromList() {
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.insert(22, 0);
+        doublyLinkedList.insert(505, 0);
+        doublyLinkedList.insert(9, 1);
+        Assert.assertFalse(doublyLinkedList.remove(null));
+    }
+
+
+    @Test
+    void removeElementFromOneElementList() {
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.insert(22, 0);
+        doublyLinkedList.remove(22);
+        Assert.assertNull(doublyLinkedList.toArray());
     }
 
     @Test
@@ -176,6 +220,26 @@ public class DoublyLinkedListTest {
         Assert.assertEquals(doublyLinkedList.get(4), Integer.valueOf(9));
         Assert.assertEquals(doublyLinkedList.get(5), Integer.valueOf(8));
     }
+
+    @Test
+    void removeElementsFromListAndGetByIndex() {
+        DoublyLinkedList<Integer> doublyLinkedList = new DoublyLinkedList<>();
+        doublyLinkedList.insert(22, 0);
+        doublyLinkedList.insert(505, 0);
+        doublyLinkedList.append(8);
+        doublyLinkedList.insert(400, 1);
+        doublyLinkedList.insert(77, 1);
+        doublyLinkedList.insert(9, 1);
+        doublyLinkedList.remove(505);
+        doublyLinkedList.remove(400);
+        doublyLinkedList.append(4);
+        doublyLinkedList.remove(22);
+        doublyLinkedList.remove(4);
+
+        Assert.assertEquals(doublyLinkedList.get(0), Integer.valueOf(9));
+        Assert.assertEquals(doublyLinkedList.get(1), Integer.valueOf(77));
+        Assert.assertEquals(doublyLinkedList.get(2), Integer.valueOf(8));
+     }
 
     @Test
     void getElementByIncorrectIndex() {

@@ -1,7 +1,5 @@
 package com.linkedList;
 
-import java.util.NoSuchElementException;
-
 public class DoublyLinkedList<T> implements LinkedList<T> {
 
     private Node<T> head;
@@ -20,16 +18,19 @@ public class DoublyLinkedList<T> implements LinkedList<T> {
 
     @Override
     public void insertHead(T value) {
-        Node<T> node = new Node<>(value);
-        if (length == 0) {
-            insertAtEmptyList(node);
-        } else {
-            node.next = head;
-            node.previous = head.previous;
-            head.previous = node;
-            head = node;
+        if (value != null) {
+            Node<T> node = new Node<>(value);
+            if (length == 0) {
+                insertAtEmptyList(node);
+            } else {
+                node.next = head;
+                node.previous = head.previous;
+                head.previous = node;
+                if (head.next.equals(head)) head.next = node;
+                head = node;
+            }
+            length++;
         }
-        length++;
     }
 
     @Override
@@ -40,45 +41,49 @@ public class DoublyLinkedList<T> implements LinkedList<T> {
 
     @Override
     public void insert(T value, int index) {
-        Node<T> node = new Node<>(value);
-        if (index == 0) {
-            insertHead(value);
-        } else if (index > 0 && index <= length) {
-            var currentNode = head;
-            if (index != length) {
-                for (int i = 0; i < index; i++) {
-                    currentNode = currentNode.next;
+        if (value != null) {
+            Node<T> node = new Node<>(value);
+            if (index == 0) {
+                insertHead(value);
+            } else if (index > 0 && index <= length) {
+                var currentNode = head;
+                if (index != length) {
+                    for (int i = 0; i < index; i++) {
+                        currentNode = currentNode.next;
+                    }
                 }
-            }
-            node.next = currentNode;
-            node.previous = currentNode.previous;
-            currentNode.previous.next = node;
-            currentNode.previous = node;
-            length++;
-        } else throw new IndexOutOfBoundsException("Index is not available");
+                node.next = currentNode;
+                node.previous = currentNode.previous;
+                currentNode.previous.next = node;
+                currentNode.previous = node;
+                length++;
+            } else throw new IndexOutOfBoundsException("Index is not available");
+        }
     }
 
     @Override
-    public void remove(T value) {
-        if (length != 0) {
-            int i = 0;
-            Node<T> current = head;
-            while (!current.value.equals(value)) {
-                current = current.next;
-                // if loop went through whole list
-                if (i == length) throw new NoSuchElementException("There is no such element in list");
-                i++;
-            }
-            if (i == 0) {
-                head.previous.next = head.next;
-                head = head.next;
-
-            } else {
-                current.previous.next = current.next;
-                current.next.previous = current.previous;
-            }
-            length--;
-        } else throw new IndexOutOfBoundsException("There are no elements in list yet");
+    public boolean remove(T value) {
+        if (value == null) return false;
+        else {
+            if (length != 0) {
+                var current = head;
+                if (current.equals(current.previous)) head = null;
+                else {
+                    while (!current.value.equals(value)) {
+                        if (current.next.equals(head)) return false;
+                        else
+                            current = current.next;
+                    }
+                    current.previous.next = current.next;
+                    current.next.previous = current.previous;
+                    if (current.equals(head)) {
+                        head = head.next;
+                    }
+                }
+                length--;
+            } else throw new IndexOutOfBoundsException("There are no elements in list yet");
+        }
+        return true;
     }
 
     @Override
@@ -120,16 +125,17 @@ public class DoublyLinkedList<T> implements LinkedList<T> {
     }
 
     @Override
-    public T[] toArray() {
+    public Object[] toArray() {
+        Object[] array = null;
         if (length != 0) {
-            T[] array = (T[]) new Object[length];
+            array = new Object[length];
             Node<T> current = head;
             for (int i = 0; i < length; i++) {
                 array[i] = current.value;
                 current = current.next;
             }
-            return array;
-        } else return null;
+        }
+        return array;
     }
 
     private void insertAtEmptyList(Node<T> node) {

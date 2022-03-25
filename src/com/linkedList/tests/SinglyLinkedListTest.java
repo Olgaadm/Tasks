@@ -4,8 +4,6 @@ import com.linkedList.SinglyLinkedList;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.NoSuchElementException;
-
 public class SinglyLinkedListTest {
 
 
@@ -91,6 +89,18 @@ public class SinglyLinkedListTest {
     }
 
     @Test
+    void insertNullElementToList() {
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.insert(22, 0);
+        singlyLinkedList.append(null);
+        singlyLinkedList.insert(505, 0);
+        singlyLinkedList.insert(null, 2);
+        singlyLinkedList.insert(9, 1);
+        Integer[] expectedArray = {505, 9, 22};
+        Assert.assertEquals(singlyLinkedList.toArray(), expectedArray);
+    }
+
+    @Test
     void checkIndexOfElements() {
         SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
         singlyLinkedList.insert(22, 0);
@@ -126,13 +136,33 @@ public class SinglyLinkedListTest {
         singlyLinkedList.insert(77, 1);
         singlyLinkedList.insert(9, 1);
         singlyLinkedList.remove(505);
-        singlyLinkedList.remove(9);
+        singlyLinkedList.remove(400);
         singlyLinkedList.append(4);
         singlyLinkedList.remove(22);
         singlyLinkedList.remove(4);
 
+        Integer[] expectedArrayAfterRemoval = {9, 77, 8};
+        Assert.assertEquals(singlyLinkedList.toArray(), expectedArrayAfterRemoval);
+    }
 
-        Integer[] expectedArrayAfterRemoval = {77, 400, 8};
+    @Test
+    void removeElementsFromEnd() {
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.insert(22, 0);
+        singlyLinkedList.insert(505, 0);
+        singlyLinkedList.append(8);
+        singlyLinkedList.insert(400, 1);
+        singlyLinkedList.insert(77, 1);
+        singlyLinkedList.insert(9, 1);
+        singlyLinkedList.remove(8);
+        singlyLinkedList.remove(22);
+        singlyLinkedList.append(4);
+        singlyLinkedList.insert(200, 3);
+        singlyLinkedList.remove(4);
+        singlyLinkedList.insertHead(89);
+        singlyLinkedList.append(68);
+
+        Integer[] expectedArrayAfterRemoval = {89, 505, 9, 77, 200, 400, 68};
         Assert.assertEquals(singlyLinkedList.toArray(), expectedArrayAfterRemoval);
     }
 
@@ -142,11 +172,25 @@ public class SinglyLinkedListTest {
         singlyLinkedList.insert(22, 0);
         singlyLinkedList.insert(505, 0);
         singlyLinkedList.insert(9, 1);
-        try {
-            singlyLinkedList.remove(4);
-        } catch (NoSuchElementException e) {
-            Assert.assertEquals(e.getMessage(), "There is no such element in list");
-        }
+        Assert.assertFalse(singlyLinkedList.remove(4));
+    }
+
+    @Test
+    void removeNullElementFromList() {
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.insert(22, 0);
+        singlyLinkedList.insert(505, 0);
+        singlyLinkedList.insert(9, 1);
+        Assert.assertFalse(singlyLinkedList.remove(null));
+    }
+
+
+    @Test
+    void removeElementFromOneElementList() {
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.insert(22, 0);
+        singlyLinkedList.remove(22);
+        Assert.assertNull(singlyLinkedList.toArray());
     }
 
     @Test
@@ -175,6 +219,26 @@ public class SinglyLinkedListTest {
         Assert.assertEquals(singlyLinkedList.get(3), Integer.valueOf(22));
         Assert.assertEquals(singlyLinkedList.get(4), Integer.valueOf(9));
         Assert.assertEquals(singlyLinkedList.get(5), Integer.valueOf(8));
+    }
+
+    @Test
+    void removeElementsFromListAndGetByIndex() {
+        SinglyLinkedList<Integer> singlyLinkedList = new SinglyLinkedList<>();
+        singlyLinkedList.insert(22, 0);
+        singlyLinkedList.insert(505, 0);
+        singlyLinkedList.append(8);
+        singlyLinkedList.insert(400, 1);
+        singlyLinkedList.insert(77, 1);
+        singlyLinkedList.insert(9, 1);
+        singlyLinkedList.remove(505);
+        singlyLinkedList.remove(400);
+        singlyLinkedList.append(4);
+        singlyLinkedList.remove(22);
+        singlyLinkedList.remove(4);
+
+        Assert.assertEquals(singlyLinkedList.get(0), Integer.valueOf(9));
+        Assert.assertEquals(singlyLinkedList.get(1), Integer.valueOf(77));
+        Assert.assertEquals(singlyLinkedList.get(2), Integer.valueOf(8));
     }
 
     @Test

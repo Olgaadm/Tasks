@@ -35,14 +35,12 @@ public class HashMap<E, V> implements Map<E, V> {
             resize();
             Entry<E, V> entry = new Entry<>(key, value);
             int hashValue = hashFunction(key);
-            boolean found = false;
             if (slots[hashValue] == null) {
                 slots[hashValue] = entry;
             } else {
-                int i = hashValue - 1;
-                while (!found) {
+                int i = hashValue;
+                while (!(slots[i] == null || slots[i].key.equals(key) || slots[i].deleted)) {
                     i = (i + 1) % capacity;
-                    found = slots[i] == null || slots[i].key.equals(key) || slots[i].deleted;
                 }
                 slots[i] = entry;
             }

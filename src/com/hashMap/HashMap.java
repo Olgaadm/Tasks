@@ -1,17 +1,20 @@
 package com.hashMap;
 
+import java.util.NoSuchElementException;
+
 public class HashMap<E, V> implements Map<E, V> {
 
     private Entry<E, V>[] slots;
 
     private int itemsInSlots;
+    private int deletedItems;
     private static final int INIT_CAPACITY = 11;
     private static final float LOAD_FACTOR = 0.75f;
     private int capacity = INIT_CAPACITY;
 
     static class Entry<E, V> {
-        private E key;
-        private V value;
+        private final E key;
+        private final V value;
         private boolean deleted;
 
         private Entry(E key, V value) {
@@ -24,107 +27,109 @@ public class HashMap<E, V> implements Map<E, V> {
         slots = (Entry<E, V>[]) new Entry[INIT_CAPACITY];
     }
 
-
     @Override
     public void put(E key, V value) {
-        if (key != null && value != null) {
-            if ((float) itemsInSlots / capacity > LOAD_FACTOR) resize();
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("This hash map could not contain null values");
+        } else {
+            resize();
             Entry<E, V> entry = new Entry<>(key, value);
             int hashValue = hashFunction(key);
+            boolean found = false;
             if (slots[hashValue] == null) {
                 slots[hashValue] = entry;
-                itemsInSlots++;
             } else {
-                int i = 0;
-                int skip = 0;
-                do {
-                    if (slots[i] != null) {
-                        if (slots[i].key == key && !slots[i].deleted) {
-                            slots[i].value = value;
-                            return;
-                        }
-                    }
-                    i = (hashValue + skip) % capacity;
-                    skip++;
+                int i = hashValue - 1;
+                while (!found) {
+                    i = (i + 1) % capacity;
+                    found = slots[i] == null || slots[i].key.equals(key) || slots[i].deleted;
                 }
-                while (slots[i] != null);
-
-                if (slots[i] == null) {
-                    slots[i] = entry;
-                    itemsInSlots++;
-                }
+                slots[i] = entry;
             }
-        } else System.out.println("This hash map could not contain null values");
+            itemsInSlots++;
+        }
     }
 
     @Override
     public V get(E key) {
-        V returnValue = null;
-        if (slots != null && key != null) {
-            int hashValue = hashFunction(key);
-            Entry<E, V> entry = slots[hashValue];
-            if (entry != null) {
-                if (entry.key == key && !entry.deleted)
-                    returnValue = entry.value;
-                else {
-                    for (int i = 0; i < capacity; i++) {
-                        if (slots[i] != null)
-                            if (slots[i].key == key && !slots[i].deleted)
-                                returnValue = slots[i].value;
-                    }
-                }
-            }
+        assertParameters(key);
+        int hashValue = hashFunction(key);
+        var entry = slots[hashValue];
+        if (entry != null && entry.key.equals(key) && !entry.deleted)
+            return entry.value;
+        else {
+            int foundSlotIndex = searchSlot(key);
+            if (foundSlotIndex != -1)
+                return slots[foundSlotIndex].value;
         }
-        return returnValue;
+        return null;
     }
+
 
     @Override
     public void remove(E key) {
-        if (slots != null && key != null) {
-            int hashValue = hashFunction(key);
-            Entry<E, V> entry = slots[hashValue];
-            if (entry != null && !entry.deleted) {
-                if (entry.key == key) slots[hashValue].deleted = true;
-                else {
-                    for (int i = 0; i < capacity; i++) {
-                        if (slots[i] != null)
-                            if (slots[i].key == key)
-                                slots[i].deleted = true;
-                    }
+        assertParameters(key);
+        int hashValue = hashFunction(key);
+        var entry = slots[hashValue];
+        if (entry == null || (entry.key.equals(key) && entry.deleted)) {
+            throw new NoSuchElementException("Item does not exist or is deleted already");
+        } else {
+            if (entry.key.equals(key)) {
+                slots[hashValue].deleted = true;
+            } else {
+                int foundSlotIndex = searchSlot(key);
+                if (foundSlotIndex != -1) {
+                    slots[foundSlotIndex].deleted = true;
                 }
-            } else System.out.println("Item does not exist or is deleted already");
+            }
+            deletedItems++;
+            resize();
         }
     }
 
-    // BUG What to do with "deleted" items?
     private void resize() {
-        Entry<E, V>[] temp = slots;
+        if ((float) (itemsInSlots) / capacity > LOAD_FACTOR) {
+            capacity = capacity * 2;
+            rehash(capacity);
+        } else {
+            if (((float) (itemsInSlots + deletedItems) / capacity > LOAD_FACTOR)) {
+                rehash(capacity);
+            }
+        }
+    }
+
+    private void rehash(int capacity) {
         itemsInSlots = 0;
-        capacity = capacity * 2;
+        deletedItems = 0;
+        var old = slots;
         slots = (Entry<E, V>[]) new Entry[capacity];
-        for (Entry<E, V> evEntry : temp) {
-            if (evEntry != null)
+        for (Entry<E, V> evEntry : old) {
+            if (evEntry != null && !evEntry.deleted)
                 put(evEntry.key, evEntry.value);
         }
     }
 
-    private int hashFunction(E key) {
-        int sum = 0;
-        int hash = 0;
-        if (key instanceof String) {
-            for (int i = 1; i <= ((String) key).length(); i++) {
-                sum = sum + i * (int) ((String) key).charAt(i);
+    private int searchSlot(E key) {
+        for (int i = 0; i < capacity; i++) {
+            if (slots[i] != null && slots[i].key.equals(key) && !slots[i].deleted) {
+                return i;
             }
-            hash = sum % capacity;
-        } else if (key instanceof Integer) {
-            hash = ((int) key * (int) key) % capacity;
         }
-        return hash;
+        return -1;
     }
 
+    private void assertParameters(E key) {
+        if (slots == null || key == null) {
+            throw new IllegalArgumentException("Either passed parameter is null or hashMap is empty");
+        }
+    }
+
+    private int hashFunction(E key) {
+        return key.hashCode() % capacity;
+    }
 
     public Entry<E, V>[] getSlots() {
-        return slots;
+        return slots.clone();
     }
 
     public int getCapacity() {

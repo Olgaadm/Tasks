@@ -7,4 +7,6 @@ public interface Tree {
     void delete(int value);
 
     boolean contains(int value);
+
+    void inorder();
 }

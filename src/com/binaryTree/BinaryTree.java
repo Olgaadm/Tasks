@@ -115,6 +115,12 @@ public class BinaryTree implements Tree {
         return tmp != null;
     }
 
+    @Override
+    public void inorder() {
+        assertEmptyTree();
+        inorderPrint(root);
+    }
+
     void inorderPrint(Node node) {
         if (node == null) {
             return;
@@ -122,11 +128,6 @@ public class BinaryTree implements Tree {
         inorderPrint(node.left);
         System.out.print(node.value + " ");
         inorderPrint(node.right);
-    }
-
-    public void inorder() {
-        assertEmptyTree();
-        inorderPrint(root);
     }
 
     private void assertEmptyTree() {

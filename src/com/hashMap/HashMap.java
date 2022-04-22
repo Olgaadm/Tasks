@@ -28,24 +28,30 @@ public class HashMap<E, V> implements Map<E, V> {
         slots = (Entry<E, V>[]) new Entry[INIT_CAPACITY];
     }
 
-    @Override
-    public void put(E key, V value) {
+    private void put(E key, V value, boolean resize) {
         if (key == null || value == null) {
             throw new IllegalArgumentException("This hash map could not contain null values");
         }
-        resize();
+        if (resize) {
+            resize();
+        }
         Entry<E, V> entry = new Entry<>(key, value);
-        int i = searchSlot(key);
-        if (slots[i].key != entry.key) {
+        int i = searchSlot(key, true);
+        if (slots[i] == null || !slots[i].key.equals(key) || slots[i].deleted) {
             itemsInSlots++;
         }
         slots[i] = entry;
     }
 
     @Override
+    public void put(E key, V value) {
+        put(key, value, true);
+    }
+
+    @Override
     public V get(E key) {
         assertParameters(key);
-        int i = searchSlot(key);
+        int i = searchSlot(key, false);
         assertFoundSlot(i);
         return slots[i].value;
     }
@@ -54,17 +60,20 @@ public class HashMap<E, V> implements Map<E, V> {
     @Override
     public void remove(E key) {
         assertParameters(key);
-        int i = searchSlot(key);
+        int i = searchSlot(key, false);
         assertFoundSlot(i);
         slots[i].deleted = true;
         deletedItems++;
         itemsInSlots--;
     }
 
-    private int searchSlot(E key) {
+    private int searchSlot(E key, boolean searchDeletedItems) {
         int i = hashFunction(key);
         int k = capacity;
-        for (; k > 0 && slots[i] != null && !(slots[i].key.equals(key)); k--) {
+        for (; slots[i] != null && !(slots[i].key.equals(key)); k--) {
+            if (searchDeletedItems && slots[i].deleted) {
+                return i;
+            }
             i = (i + 1) % capacity;
         }
         if (k != 0) {
@@ -74,13 +83,18 @@ public class HashMap<E, V> implements Map<E, V> {
     }
 
     private void resize() {
-        if ((float) (itemsInSlots) / capacity > LOAD_FACTOR) {
+        final int TRESHOLD = Math.round(LOAD_FACTOR * capacity);
+        if (itemsInSlots > TRESHOLD) {
             capacity = capacity * 2;
             rehash(capacity);
-        } else if (((float) (itemsInSlots + deletedItems) / capacity > LOAD_FACTOR)) {
+        } else if ((itemsInSlots + deletedItems) > TRESHOLD) {
             rehash(capacity);
+        } else {
+            if ((itemsInSlots > TRESHOLD/ 8) && (itemsInSlots < TRESHOLD / 2)) {
+                capacity = TRESHOLD / 2;
+                rehash(capacity);
+            }
         }
-
     }
 
     private void rehash(int capacity) {
@@ -90,7 +104,7 @@ public class HashMap<E, V> implements Map<E, V> {
         slots = (Entry<E, V>[]) new Entry[capacity];
         for (Entry<E, V> evEntry : old) {
             if (evEntry != null && !evEntry.deleted)
-                put(evEntry.key, evEntry.value);
+                put(evEntry.key, evEntry.value, false);
         }
     }
 

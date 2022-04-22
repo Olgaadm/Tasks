@@ -50,7 +50,7 @@ public class HashMapTest {
         hashMap.put(12, "test5");
         hashMap.put(13, "test5");
 
-        Assert.assertEquals(hashMap.getCapacity(), 22);
+        Assert.assertEquals(hashMap.getCapacity(), 16);
         Assert.assertEquals(hashMap.getItemsInSlots(), 13);
     }
 
@@ -170,14 +170,14 @@ public class HashMapTest {
         hashMap.put(9, "test0");
         hashMap.put(10, "test6");
         hashMap.put(11, "test4");
-        Assert.assertEquals(hashMap.getCapacity(), 22);
+        Assert.assertEquals(hashMap.getCapacity(), 16);
         Assert.assertEquals(hashMap.getItemsInSlots(), 13);
 
         hashMap.remove(2);
         hashMap.remove(8);
         hashMap.remove(453);
         hashMap.remove(11);
-        Assert.assertEquals(hashMap.getCapacity(), 22);
+        Assert.assertEquals(hashMap.getCapacity(), 16);
         Assert.assertEquals(hashMap.getItemsInSlots(), 9);
         hashMap.remove(97);
         hashMap.remove(3);
@@ -187,7 +187,7 @@ public class HashMapTest {
         hashMap.remove(99);
         hashMap.remove(1);
         hashMap.remove(98);
-        Assert.assertEquals(hashMap.getCapacity(), 22);
+        Assert.assertEquals(hashMap.getCapacity(), 16);
         Assert.assertEquals(hashMap.getItemsInSlots(), 1);
     }
 
@@ -198,7 +198,7 @@ public class HashMapTest {
             hashMap.put(i, "test" + i);
         }
         Assert.assertEquals(hashMap.getItemsInSlots(), 100);
-        Assert.assertEquals(hashMap.getCapacity(), 176);
+        Assert.assertEquals(hashMap.getCapacity(), 256);
 
         for (int i = 0; i < 100; i++) {
             Assert.assertEquals(hashMap.get(i), "test" + i);
@@ -209,6 +209,6 @@ public class HashMapTest {
         Assert.assertEquals(hashMap.getItemsInSlots(), 50);
         hashMap.put(99, "test101");
         Assert.assertEquals(hashMap.getItemsInSlots(), 50);
-        Assert.assertEquals(hashMap.getCapacity(), 176);
+        Assert.assertEquals(hashMap.getCapacity(), 96);
     }
 }

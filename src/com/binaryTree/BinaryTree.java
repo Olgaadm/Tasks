@@ -16,7 +16,7 @@ public class BinaryTree implements Tree {
     }
 
     @Override
-    public void insert(int value) {
+    public boolean insert(int value) {
         Node node = new Node(value);
         if (root == null) {
             root = node;
@@ -24,63 +24,48 @@ public class BinaryTree implements Tree {
             Node parent = null;
             var tmp = root;
             while (tmp != null) {
-                parent = tmp;
-                if (value >= tmp.value) {
-                    tmp = tmp.right;
-                } else {
-                    tmp = tmp.left;
+                if (tmp.value == node.value) {
+                    return false;
                 }
+                parent = tmp;
+                tmp = compareValueAndSetNode(node.value, tmp);
             }
-            if (value >= parent.value) {
+            if (node.value > parent.value) {
                 parent.right = node;
-            } else {
+            } else if (node.value < parent.value) {
                 parent.left = node;
             }
         }
+        return true;
     }
 
     @Override
-    public void delete(int value) {
-        assertEmptyTree();
+    public boolean delete(int value) {
         Node parent = null;
         var tmp = root;
         while (tmp != null && tmp.value != value) {
             parent = tmp;
-            if (value >= tmp.value) {
-                tmp = tmp.right;
-            } else {
-                tmp = tmp.left;
-            }
+            tmp = compareValueAndSetNode(value, tmp);
         }
-        if (tmp != null) {
+        if (tmp == null) {
+            return false;
+        } else {
             //Node does not have any leaves
             if (tmp.right == null && tmp.left == null) {
-                if (parent != null && parent.right == tmp) {
-                    parent.right = null;
-                }
-                if (parent != null && parent.left == tmp) {
-                    parent.left = null;
-                }
+                compareAndSetRightChild(parent, tmp, null);
+                compareAndSetLeftChild(parent, tmp, null);
                 if (tmp == root) {
                     root = null;
                 }
             }
             //Node does have just one leaf
             if (tmp.right != null && tmp.left == null) {
-                if (parent != null && parent.right == tmp) {
-                    parent.right = tmp.right;
-                }
-                if (parent != null && parent.left == tmp) {
-                    parent.left = tmp.right;
-                }
+                compareAndSetRightChild(parent, tmp, tmp.right);
+                compareAndSetLeftChild(parent, tmp, tmp.right);
             }
             if (tmp.left != null && tmp.right == null) {
-                if (parent != null && parent.right == tmp) {
-                    parent.right = tmp.left;
-                }
-                if (parent != null && parent.left == tmp) {
-                    parent.left = tmp.left;
-                }
+                compareAndSetRightChild(parent, tmp, tmp.left);
+                compareAndSetLeftChild(parent, tmp, tmp.left);
             }
             //Node has two leaves
             if (tmp.left != null && tmp.right != null) {
@@ -91,33 +76,55 @@ public class BinaryTree implements Tree {
                     deputy = deputy.left;
                 }
                 if (deputyParent.left == deputy) {
+                    if (deputy.right != null){
+                        deputyParent.left = deputy.right;
+                    } else
                     deputyParent.left = null;
                 }
                 if (deputyParent.right == deputy) {
+                    if (deputy.right != null){
+                        deputyParent.right = deputy.right;
+                    } else
                     deputyParent.right = null;
                 }
                 tmp.value = deputy.value;
             }
+            return true;
+        }
+    }
+
+    private Node compareValueAndSetNode(int value, Node node) {
+        if (value > node.value) {
+            node = node.right;
+        } else {
+            node = node.left;
+        }
+        return node;
+    }
+
+    private void compareAndSetRightChild(Node parent, Node tmp, Node nodeToReplace) {
+        if (parent != null && parent.right == tmp) {
+            parent.right = nodeToReplace;
+        }
+    }
+
+    private void compareAndSetLeftChild(Node parent, Node tmp, Node nodeToReplace) {
+        if (parent != null && parent.left == tmp) {
+            parent.left = nodeToReplace;
         }
     }
 
     @Override
     public boolean contains(int value) {
-        assertEmptyTree();
         var tmp = root;
         while (tmp != null && tmp.value != value) {
-            if (tmp.value < value) {
-                tmp = tmp.right;
-            } else {
-                tmp = tmp.left;
-            }
+            tmp = compareValueAndSetNode(value, tmp);
         }
         return tmp != null;
     }
 
     @Override
     public void inorder() {
-        assertEmptyTree();
         inorderPrint(root);
     }
 
@@ -129,11 +136,4 @@ public class BinaryTree implements Tree {
         System.out.print(node.value + " ");
         inorderPrint(node.right);
     }
-
-    private void assertEmptyTree() {
-        if (root == null) {
-            throw new NullPointerException("There are no items in tree yet");
-        }
-    }
-
 }

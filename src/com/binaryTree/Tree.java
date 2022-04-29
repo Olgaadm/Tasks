@@ -2,9 +2,9 @@ package com.binaryTree;
 
 public interface Tree {
 
-    void insert(int value);
+    boolean insert(int value);
 
-    void delete(int value);
+    boolean delete(int value);
 
     boolean contains(int value);
 

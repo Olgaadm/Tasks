@@ -45,7 +45,6 @@ public class BinaryTreeTests {
 
         binaryTree.delete(8);
         binaryTree.inorder();
-
     }
 
     @Test

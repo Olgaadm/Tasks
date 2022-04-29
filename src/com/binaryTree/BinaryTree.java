@@ -28,7 +28,7 @@ public class BinaryTree implements Tree {
                     return false;
                 }
                 parent = tmp;
-                tmp = compareValueAndSetNode(node.value, tmp);
+                tmp = compareValueAndSetNextNode(node.value, tmp);
             }
             if (node.value > parent.value) {
                 parent.right = node;
@@ -45,7 +45,7 @@ public class BinaryTree implements Tree {
         var tmp = root;
         while (tmp != null && tmp.value != value) {
             parent = tmp;
-            tmp = compareValueAndSetNode(value, tmp);
+            tmp = compareValueAndSetNextNode(value, tmp);
         }
         if (tmp == null) {
             return false;
@@ -69,31 +69,13 @@ public class BinaryTree implements Tree {
             }
             //Node has two leaves
             if (tmp.left != null && tmp.right != null) {
-                Node deputyParent = tmp;
-                var deputy = tmp.right;
-                while (deputy.left != null) {
-                    deputyParent = deputy;
-                    deputy = deputy.left;
-                }
-                if (deputyParent.left == deputy) {
-                    if (deputy.right != null){
-                        deputyParent.left = deputy.right;
-                    } else
-                    deputyParent.left = null;
-                }
-                if (deputyParent.right == deputy) {
-                    if (deputy.right != null){
-                        deputyParent.right = deputy.right;
-                    } else
-                    deputyParent.right = null;
-                }
-                tmp.value = deputy.value;
+                replaceNodeIfDeletedHasTwoLeaves(tmp);
             }
             return true;
         }
     }
 
-    private Node compareValueAndSetNode(int value, Node node) {
+    private Node compareValueAndSetNextNode(int value, Node node) {
         if (value > node.value) {
             node = node.right;
         } else {
@@ -114,11 +96,32 @@ public class BinaryTree implements Tree {
         }
     }
 
+    private void replaceNodeIfDeletedHasTwoLeaves(Node tmp){
+        Node deputyParent = tmp;
+        var deputy = tmp.right;
+        while (deputy.left != null) {
+            deputyParent = deputy;
+            deputy = deputy.left;
+        }
+        if (deputyParent.left == deputy) {
+            if (deputy.right != null){
+                deputyParent.left = deputy.right;
+            } else
+                deputyParent.left = null;
+        }
+        if (deputyParent.right == deputy) {
+            if (deputy.right != null){
+                deputyParent.right = deputy.right;
+            } else
+                deputyParent.right = null;
+        }
+        tmp.value = deputy.value;
+    }
     @Override
     public boolean contains(int value) {
         var tmp = root;
         while (tmp != null && tmp.value != value) {
-            tmp = compareValueAndSetNode(value, tmp);
+            tmp = compareValueAndSetNextNode(value, tmp);
         }
         return tmp != null;
     }
@@ -128,7 +131,7 @@ public class BinaryTree implements Tree {
         inorderPrint(root);
     }
 
-    void inorderPrint(Node node) {
+    private void inorderPrint(Node node) {
         if (node == null) {
             return;
         }

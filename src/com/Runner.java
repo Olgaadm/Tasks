@@ -8,21 +8,42 @@ public class Runner {
 
     public static void main(String[] args) {
         int numberOfProducers = 5;
-        int numberOfConsumers = 5;
-
-        ArrayBlockingQueue<String> sharedQueue = new ArrayBlockingQueue<>(numberOfProducers);
+        int numberOfConsumers = 6;
+        int numberOfStrings = 1000;
+        String stopWord = "STOP";
+        // Add switch for case with timeout and case with stop word
+        boolean runCaseWithStopWord = true;
+        ArrayBlockingQueue<String> sharedQueue = new ArrayBlockingQueue<>(numberOfStrings * numberOfProducers);
         CopyOnWriteArrayList<Thread> producersCollection = new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Thread> consumerCollection = new CopyOnWriteArrayList<>();
         TreeSet<String> itemsToPrint = new TreeSet<>();
 
         for (int i = 0; i < numberOfProducers; i++) {
-            Thread producer = new Thread(new Producer(sharedQueue, producersCollection));
+            Thread producer = new Thread(new Producer(sharedQueue, numberOfStrings));
             producer.setDaemon(true);
+            producersCollection.add(producer);
             producer.start();
         }
 
+        for (Thread thread : producersCollection) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                System.out.println("Producer thread " + thread.getName() + " was interrupted");
+            }
+            if (runCaseWithStopWord) {
+                sharedQueue.add(stopWord);
+            }
+        }
+
         for (int j = 0; j < numberOfConsumers; j++) {
-            Thread consumer = new Thread(new Consumer(sharedQueue, producersCollection, itemsToPrint));
+            Thread consumer;
+
+            if (runCaseWithStopWord) {
+                consumer = new Thread(new ConsumerWithStopWord(sharedQueue, itemsToPrint));
+            } else {
+                consumer = new Thread(new ConsumerWithTimeout(sharedQueue, itemsToPrint));
+            }
             consumer.setDaemon(true);
             consumerCollection.add(consumer);
             consumer.start();

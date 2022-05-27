@@ -13,7 +13,7 @@ public class Runner {
         String stopWord = "STOP";
         // Add switch for case with timeout and case with stop word
         boolean runCaseWithStopWord = true;
-        ArrayBlockingQueue<String> sharedQueue = new ArrayBlockingQueue<>(numberOfStrings * numberOfProducers);
+        ArrayBlockingQueue<String> sharedQueue = new ArrayBlockingQueue<>(numberOfStrings * numberOfProducers + numberOfConsumers);
         CopyOnWriteArrayList<Thread> producersCollection = new CopyOnWriteArrayList<>();
         CopyOnWriteArrayList<Thread> consumerCollection = new CopyOnWriteArrayList<>();
         TreeSet<String> itemsToPrint = new TreeSet<>();
@@ -31,7 +31,10 @@ public class Runner {
             } catch (InterruptedException e) {
                 System.out.println("Producer thread " + thread.getName() + " was interrupted");
             }
-            if (runCaseWithStopWord) {
+        }
+
+        if (runCaseWithStopWord) {
+            for (int k = 0; k < numberOfConsumers; k++) {
                 sharedQueue.add(stopWord);
             }
         }

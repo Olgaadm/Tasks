@@ -29,9 +29,7 @@ public class ConsumerWithTimeout implements Runnable{
     }
 
     private void addItemToTreeSet(String itemFromQueue) {
-        synchronized (itemsToPrint) {
             itemsToPrint.add(itemFromQueue);
-        }
     }
 }
 

@@ -1,4 +1,6 @@
-package com;
+package com.additionalImplementation;
+
+import com.Producer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,14 +17,13 @@ public class Runner {
         int numberOfStrings = 1000;
         char[] STOPWORD = new char[10];
         // Add switch for case with timeout and case with stop word
-        boolean runCaseWithStopWord = true;
+        boolean runCaseWithStopWord = false;
         ArrayBlockingQueue<String> sharedQueue = new ArrayBlockingQueue<>(numberOfConsumers);
         ArrayList<Thread> producersCollection = new ArrayList<>();
         ArrayList<Thread> consumerCollection = new ArrayList<>();
         AtomicInteger numberOfActiveProducers = new AtomicInteger(0);
-
         TreeSet<String> itemsToPrint = new TreeSet<>();
-
+        System.out.println("This is " + Arrays.toString(STOPWORD) + " stop words");
         for (int i = 0; i < numberOfProducers; i++) {
             Thread producer = new Thread(new Producer(sharedQueue, numberOfStrings, numberOfActiveProducers));
             producer.setDaemon(true);
@@ -32,12 +33,7 @@ public class Runner {
         }
 
         for (int j = 0; j < numberOfConsumers; j++) {
-            Thread consumer;
-            if (runCaseWithStopWord) {
-                consumer = new Thread(new ConsumerWithStopWord(sharedQueue, itemsToPrint));
-            } else {
-                consumer = new Thread(new ConsumerWithTimeout(sharedQueue, itemsToPrint, numberOfActiveProducers));
-            }
+            Thread consumer = new Thread(new Consumer(sharedQueue, itemsToPrint, numberOfActiveProducers));
             consumer.setDaemon(true);
             consumerCollection.add(consumer);
             consumer.start();
@@ -69,5 +65,4 @@ public class Runner {
             System.out.println(item);
         }
     }
-
 }

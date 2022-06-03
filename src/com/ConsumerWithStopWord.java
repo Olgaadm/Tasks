@@ -1,5 +1,6 @@
 package com;
 
+import java.util.Arrays;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -14,13 +15,14 @@ public class ConsumerWithStopWord implements Runnable {
         this.itemsToPrint = itemsToPrint;
     }
 
+
     @Override
     public void run() {
         while (true) {
             try {
-                String stopWord = "STOP";
+                char[] STOPWORD = new char[10];
                 String itemFromQueue = queue.take();
-                if (itemFromQueue.equals(stopWord)) {
+                if (itemFromQueue.equals(Arrays.toString(STOPWORD))) {
                     System.out.println("Consumer in Thread " + Thread.currentThread().getName() + " was stopped");
                     return;
                 } else {
